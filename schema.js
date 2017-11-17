@@ -22,17 +22,18 @@ const RecipeType = new GraphQLObjectType({
     fields: () => ({
         label: {
             type: GraphQLString,
-            resolve: () => { console.log('here')}
+            resolve: () => 
+                recipe.responseData.label
         },
 
-        calories: {
+       /* source: {
             type: GraphQLInt,
-            resolve: () => { console.log('here2')}
-        }
+            resolve: () => { return recipe.source; }
+        }*/
     })
 })
 
-module.export = new GraphQLSchema({
+module.exports = new GraphQLSchema({
     query: new GraphQLObjectType({
         name: 'Query',
         description: '...',
@@ -47,10 +48,15 @@ module.export = new GraphQLSchema({
                     `https://api.edamam.com/search?q=`+q+`&app_ID=`+ID)
                     .then((response) => {
                         console.log('fetching-promise');
-                        console.log(response.json);
+                       // response.json(data);
+                        //console.log(response.json());
                         return response.json();
                     }) 
-               
+                    .then((responseData) => {
+                        console.log('response.json-promise resolution');
+                        console.log(responseData.hits[0], ' data here maybe?')
+                        return responseData.hits[0];
+                    })
             }
         })
     })
