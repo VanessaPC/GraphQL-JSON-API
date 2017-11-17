@@ -1,6 +1,5 @@
 const fetch = require('node-fetch')
 
-
 // I need a search word in order to search 
 const q = 'chicken';
 
@@ -15,31 +14,22 @@ const {
     GraphQLList
 } = require('graphql')
 
-/*fetch(
-    'https://api.edamam.com/search?q='+ q + '&app_ID=' + ID 
-).then(response => response.json())*/
-
 
 const RecipeType = new GraphQLObjectType({
-    name: 'Ingredients',
+    name: 'Recipe',
     description: '...',
+    
+    fields: () => ({
+        label: {
+            type: GraphQLString,
+            resolve: () => { console.log('here')}
+        },
 
-    fields: () => {
-        url: {
-            type: GraphQLString
-            /*resolve: (argument) => {
-                console.log(argument)
-                return this.argument;
-            }*/
+        calories: {
+            type: GraphQLInt,
+            resolve: () => { console.log('here2')}
         }
-
-        //calories: {
-          //  type: GraphQLInt
-           /* resolve: (argument) => {
-                return this.argument;
-            }*/
-        //}
-    }
+    })
 })
 
 module.export = new GraphQLSchema({
@@ -47,13 +37,21 @@ module.export = new GraphQLSchema({
         name: 'Query',
         description: '...',
 
-        fields: () => {
+        fields: () => ({
             recipe: {
-                type: RecipeType
+                type: RecipeType,
                 args: {
-                   url: { type: graphQLString }
-                }
+                    id: { type: GraphQLInt }
+                },
+                resolve: (root, args) => fetch(
+                    `https://api.edamam.com/search?q=`+q+`&app_ID=`+ID)
+                    .then((response) => {
+                        console.log('fetching-promise');
+                        console.log(response.json);
+                        return response.json();
+                    }) 
+               
             }
-        }
+        })
     })
 })
