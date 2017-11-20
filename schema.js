@@ -20,10 +20,16 @@ const Ingredients = new GraphQLObjectType({
     description: '...',
 
     fields: () => ({
-        item: {
+        ingredient: ({
             type: GraphQLString,
-            resolve: (data.recipe.ingredients) => 
-        }
+            args: {
+                lang: { type: GraphQLString }
+            },
+            resolve: (data, args) => {
+                const ingredient = data.recipe.ingredients.map(elem => elem.ingredient[0]._)
+                console.log(ingredient, 'data here')
+            } 
+        })
     })
 })
 
@@ -62,7 +68,9 @@ const RecipeType = new GraphQLObjectType({
         },
         ingredients: {
             type: new GraphQLList(Ingredients),
-            resolve: (data) => data.recipe.ingredients
+            resolve: (ingredient, args, context) => {
+                return context.ingredientsLoader.loadMany(ingredient) 
+            }
         }
     })
 })
@@ -84,7 +92,7 @@ module.exports = new GraphQLSchema({
                         return response.json();
                     }) 
                     .then ((responseData) => {
-                        console.log(responseData.hits)
+                        //console.log(responseData.hits)
                         return responseData.hits;
                     })
             }
