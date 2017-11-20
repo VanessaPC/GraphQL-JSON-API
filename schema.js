@@ -14,11 +14,17 @@ const {
     GraphQLList
 } = require('graphql')
 
-const DietLabels = new GraphQLObjectType({
-    name: 'DietLabels',
+
+const Ingredients = new GraphQLObjectType({
+    name: 'Ingredients',
     description: '...',
 
-    
+    fields: () => ({
+        item: {
+            type: GraphQLString,
+            resolve: (data.recipe.ingredients) => 
+        }
+    })
 })
 
 const RecipeType = new GraphQLObjectType({
@@ -43,8 +49,20 @@ const RecipeType = new GraphQLObjectType({
             resolve: (data) => data.recipe.url
         },
         dietLabel: {
-            type: new GraphQLList(GraphQLString)
-            
+            type: new GraphQLList(GraphQLString),
+            resolve: (data) => data.recipe.dietLabels
+        },
+        healthLabels: {
+            type: new GraphQLList(GraphQLString),
+            resolve: (data) => data.recipe.healthLabels
+        },
+        ingredientLines: {
+            type: new GraphQLList(GraphQLString),
+            resolve: (data) => data.recipe.ingredientLines
+        },
+        ingredients: {
+            type: new GraphQLList(Ingredients),
+            resolve: (data) => data.recipe.ingredients
         }
     })
 })
@@ -66,7 +84,7 @@ module.exports = new GraphQLSchema({
                         return response.json();
                     }) 
                     .then ((responseData) => {
-                        console.log(responseData.hits[1].recipe.dietLabels)
+                        console.log(responseData.hits)
                         return responseData.hits;
                     })
             }
