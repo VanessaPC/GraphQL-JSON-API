@@ -11,25 +11,52 @@ const {
     GraphQLObjectType,
     GraphQLInt,
     GraphQLString,
-    GraphQLList
+    GraphQLList,
+    GraphQLFloat
 } = require('graphql')
 
+
+/*const TotalNutrients = new GraphQLObjectType({
+    name: 'TotalNutrients',
+    description: '...', 
+
+    fields: () => ({
+        name: {
+            type: GraphQLString,
+            resolve: (data) => data.GraphQLString
+        }
+        quantity: {
+            type: new GraphQLList(Nutrients),
+            resolve: (data) => data
+        }
+    })
+})*/
 
 const Ingredients = new GraphQLObjectType({
     name: 'Ingredients',
     description: '...',
 
     fields: () => ({
-        ingredient: ({
+        text: {
             type: GraphQLString,
-            args: {
-                lang: { type: GraphQLString }
-            },
-            resolve: (data, args) => {
-                const ingredient = data.recipe.ingredients.map(elem => elem.ingredient[0]._)
-                console.log(ingredient, 'data here')
-            } 
-        })
+            resolve: (data) => data.text
+        },
+        quantity: {
+            type: GraphQLFloat,
+            resolve: (data) => data.quantity
+        },
+        measure: {
+            type: GraphQLString,
+            resolve: (data) => data.measure
+        },
+        food: {
+            type: GraphQLString,
+            resolve: (data) => data.food
+        },
+        weight: {
+            type: GraphQLFloat,
+            resolve: (data) => data.weight
+        }
     })
 })
 
@@ -54,6 +81,10 @@ const RecipeType = new GraphQLObjectType({
             type: GraphQLString,
             resolve: (data) => data.recipe.url
         },
+        shareAs: {
+            type: GraphQLString,
+            resolve: (data) => data.recipe.shareAs
+        },
         dietLabel: {
             type: new GraphQLList(GraphQLString),
             resolve: (data) => data.recipe.dietLabels
@@ -68,10 +99,21 @@ const RecipeType = new GraphQLObjectType({
         },
         ingredients: {
             type: new GraphQLList(Ingredients),
-            resolve: (ingredient, args, context) => {
-                return context.ingredientsLoader.loadMany(ingredient) 
-            }
-        }
+            resolve: (data) => data.recipe.ingredients
+            
+        },
+        calories: {
+            type: GraphQLString,
+            resolve: (data) => data.recipe.calories
+        },
+        totalWeight: {
+            type: GraphQLFloat,
+            resolve: (data) => data.recipe.totalWeight
+        }/*
+        totalNutrients: {
+            type: new GraphQLList(TotalNutrients),
+            resolve: (data) => data.recipe.totalNutrients
+        }*/
     })
 })
 
@@ -92,7 +134,8 @@ module.exports = new GraphQLSchema({
                         return response.json();
                     }) 
                     .then ((responseData) => {
-                        //console.log(responseData.hits)
+                        //console.log(responseData.hits[0].recipe.totalNutrients)
+                        console.log(responseData.hits[0].recipe)
                         return responseData.hits;
                     })
             }
