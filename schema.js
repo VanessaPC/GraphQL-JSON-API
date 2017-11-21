@@ -12,9 +12,51 @@ const {
     GraphQLInt,
     GraphQLString,
     GraphQLList,
-    GraphQLFloat
+    GraphQLFloat,
+    GraphQLBoolean
 } = require('graphql')
 
+
+
+const Digestive = new GraphQLObjectType({
+    name: 'Digestive',
+    description: '...',
+
+    fields: () => ({
+        label: {
+            type: GraphQLString, 
+            resolve: (data) => data.label
+        },
+        tag: {
+            type: GraphQLString,
+            resolve: (data) => data.tag
+        },
+        schemaOrgTag: {
+            type: GraphQLString,
+            resolve: (data) => data.schemaOrgTag
+        }, 
+        total: {
+            type: GraphQLFloat,
+            resolve: (data) => data.total
+        },
+        hasRDI: {
+            type: GraphQLBoolean,
+            resolve: (data) => data.hasRDI
+        },
+        daily: {
+            type: GraphQLFloat,
+            resolve: (data) => data.daily
+        }, 
+        unit: {
+            type: GraphQLString,
+            resolve: (data) => data.unit
+        },
+        sub: {
+            type: new GraphQLList(GraphQLString),
+            resolve: (data) => data.recipe.sub
+        }
+    })
+})
 
 /*const TotalNutrients = new GraphQLObjectType({
     name: 'TotalNutrients',
@@ -23,11 +65,7 @@ const {
     fields: () => ({
         name: {
             type: GraphQLString,
-            resolve: (data) => data.GraphQLString
-        }
-        quantity: {
-            type: new GraphQLList(Nutrients),
-            resolve: (data) => data
+            resolve: (data) => data[0]
         }
     })
 })*/
@@ -113,7 +151,11 @@ const RecipeType = new GraphQLObjectType({
         totalNutrients: {
             type: new GraphQLList(TotalNutrients),
             resolve: (data) => data.recipe.totalNutrients
-        }*/
+        }*/, 
+        digestive: {
+            type: new GraphQLList(Digestive),
+            resolve: (data) => data.recipe.digest
+        }
     })
 })
 
@@ -134,7 +176,6 @@ module.exports = new GraphQLSchema({
                         return response.json();
                     }) 
                     .then ((responseData) => {
-                        //console.log(responseData.hits[0].recipe.totalNutrients)
                         console.log(responseData.hits[0].recipe)
                         return responseData.hits;
                     })
